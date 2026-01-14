@@ -46,8 +46,8 @@ def get_dtdx(v,t,y0):
     return get_dx(a,b,c,da,db,0)
 
 
-def get(v,t,y0):
-    return (get_dtdx(v,t,y0)**2+get_dvdx(v,t,y0)**2)**.5
+def get(v,t):
+    return (get_dtdx(v,t,-2)**2+get_dvdx(v,t,-2)**2)**.5
 
 def get_dist(v,t,y0):
     g=-10.0

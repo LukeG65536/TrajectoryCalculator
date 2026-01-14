@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import trajectory_math
 
-row = 500
-col = 500
+row = 1000
+col = 1000
 
 t_min,t_max = .5,1.5
 v_min,v_max = 6,12
@@ -15,19 +15,21 @@ v_min,v_max = 6,12
 x_cords = np.linspace(t_min,t_max, row)
 y_cords = np.linspace(v_min,v_max, col)
 
-# plt.xlim((t_max,t_max))
-# plt.ylim((v_min,v_max))
+plt.xlim((t_max,t_max))
+plt.ylim((v_min,v_max))
 
 arr = np.zeros((row,col,2))
 
-# X, Y = np.meshgrid(x_cords, y_cords)
+# input = np.meshgrid(x_cords, y_cords)
+
+# arr = np.fromfunction(lambda: trajectory_math.get, (row,col), dtype=float)
 
 
 for i in range(row):
     for j in range(col):
         t = x_cords[i]
         v = y_cords[j]
-        res = trajectory_math.get(v,t,-2)
+        res = trajectory_math.get(v,t)
         if res > 100:
             res = None
         arr[j][i][0] = res
@@ -37,7 +39,7 @@ for i in range(row):
 fig, ax = plt.subplots()
 
         
-plt.imshow(arr[:,:,0], norm='log', cmap='plasma', origin='lower')
+img = plt.imshow(arr[:,:,0], norm='log', cmap='plasma', origin='lower')
 plt.xlabel('initial angle radians')
 plt.ylabel('initial velocity m/s')
 
