@@ -1,4 +1,6 @@
+import math
 import numpy as np
+from scipy import optimize
 
 
 def get_du(a,b,c,da,db,dc):
@@ -46,8 +48,16 @@ def get_dtdx(v,t,y0):
     return get_dx(a,b,c,da,db,0)
 
 
-def get(v,t):
+def get_divergence(v,t):
     return (get_dtdx(v,t,-2)**2+get_dvdx(v,t,-2)**2)**.5
+
+def get_error(input):
+    res = get_divergence(input[0],input[1]) + (get_dist(input[0],input[1],-2)-input[2])**2
+    if math.isnan(res): return 10000
+    # print(res)
+    # print(input)
+    return res
+
 
 def get_dist(v,t,y0):
     g=-10.0
@@ -58,4 +68,8 @@ def get_dist(v,t,y0):
 
     return (-b-u**.5)*(.5)*(1/a)
 
-
+def get_optimal_from_dist(dist):
+    init_guess = (15,.7,dist)
+    bounds = ((6,20),(.5,1.5),(dist,dist))
+    res = optimize.minimize(get_error,init_guess,bounds=bounds)
+    return res.x
