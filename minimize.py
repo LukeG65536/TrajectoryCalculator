@@ -3,11 +3,11 @@ matplotlib.use('QtAgg')
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
-from trajectory_math import get_divergence,get_dist,get_optimal_from_dist
+from trajectory_math import *
 from scipy import optimize
 
-row = 500
-col = 500
+row = 250
+col = 250
 
 t_min,t_max = .5,1.5
 v_min,v_max = 6,15
@@ -20,24 +20,37 @@ y_cords = np.linspace(v_min,v_max, col)
 arr = np.zeros((row,col,2))
 
 for i in range(row):
+    print(i*100/row)
     for j in range(col):
         t = x_cords[i]
         v = y_cords[j]
-        res = get_divergence(v,t)
+        # res = get_divergence(v,t)
+        # res = get_error((v,t,0))
+        # res = get_ball_shadow_width(v,t,-2)
+        res = get_max_area_custom(v,t,-2,1,.2,15)
+
         if res > 100:
-            res = None
+            res = 0
+     
         arr[j][i][0] = res
         arr[j][i][1] = get_dist(v,t,-2)
 
-dists = np.linspace(1,20,line_res)
+dists = np.linspace(0.1,22,line_res)
 
-X = np.zeros((line_res))
-Y = np.zeros((line_res))
+X1 = np.zeros((line_res))
+Y1 = np.zeros((line_res))
+X2 = np.zeros((line_res))
+Y2 = np.zeros((line_res))
+
+for i in range(line_res):
+    res = get_optimal_from_dist_old(dists[i])
+    X1[i] = (res[1]-t_min)*(row/(t_max-t_min))
+    Y1[i] = (res[0]-v_min)*(col/(v_max-v_min))
 
 for i in range(line_res):
     res = get_optimal_from_dist(dists[i])
-    X[i] = (res[1]-t_min)*(row/(t_max-t_min))
-    Y[i] = (res[0]-v_min)*(col/(v_max-v_min))
+    X2[i] = (res[1]-t_min)*(row/(t_max-t_min))
+    Y2[i] = (res[0]-v_min)*(col/(v_max-v_min))
 
 
 fig, ax = plt.subplots()
@@ -45,18 +58,21 @@ fig, ax = plt.subplots()
 
 
         
-img = plt.imshow(arr[:,:,0], norm='log', cmap='inferno', origin='lower')
+img = plt.imshow(arr[:,:,0], norm='linear', cmap='magma', origin='lower')
 plt.xlabel('initial angle radians')
 plt.ylabel('initial velocity m/s')
 
 ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: ('%g') % (x * ((t_max-t_min)/row)+t_min)))
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * ((v_max-v_min)/row)+v_min)))
 
-# CS = ax.contour(arr[:,:,1], 20, colors='black')
+# CS = ax.contour(arr[:,:,1], 10, colors='blue')
 # plt.clabel(CS, inline=True, fontsize=10)
-plt.plot(X,Y, color='red')
+plt.plot(X1,Y1, color='blue')
+# plt.plot(X1,Y1, color='blue')
 
 
+plt.xlim((0,row))
+plt.ylim((0,col))
 
 
 plt.show() 

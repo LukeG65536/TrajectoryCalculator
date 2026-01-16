@@ -1,27 +1,13 @@
-import trajectory_math
+from trajectory_math import *
 
-v = 12
-t = .75
-g=-10
+v,t,y0 = 9,1,-2
 
-a = trajectory_math.get_a(v,t,-10)
-b = trajectory_math.get_b(t)
-c = -2
 
-u = trajectory_math.get_u(a,b,c)
-dist = (-b-u**.5)*(.5)*(1/a)
-dtdx = trajectory_math.get_dtdx(v,t,c)
-dvdx = trajectory_math.get_dvdx(v,t,c)
-dadt = trajectory_math.get_da(v,t,0,1,g)
-dadv = trajectory_math.get_da(v,t,1,0,g)
+to_min = lambda x: -get_area(v,t,-2,x*1, x*.1, get_dist(v,t,-2), 0.595)
 
-print('a'+str(a))
-print('b'+str(b))
-print('c'+str(c))
+# better = to_min(.292)
 
-print('u'+str(u))
-print('dist'+str(dist))
-print('dtdx'+str(dtdx))
-print('dvdx'+str(dvdx))
-print('dadt'+str(dadt))
-print('dadv'+str(dadv))
+res = get_max_area(v,t,y0,1,.1)
+res2 = get_max_area_custom(v,t,y0,1,.1,15)
+
+print(f'{res} and {res2} diff {res-res2}')
