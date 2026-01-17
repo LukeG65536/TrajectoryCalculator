@@ -64,7 +64,7 @@ def get_divergence(v,t):
 
 def get_error(input):
     v,t,dist = input
-    res = get_divergence(v,t) + (dist - get_dist(v,t,-2))**2
+    res = (-1)*(get_max_area_custom(v,t,-2,1,.2,15)**2) + np.abs(dist - get_dist(v,t,-2))
     if math.isnan(res): return 10000
     return res
 

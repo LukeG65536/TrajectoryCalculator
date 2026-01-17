@@ -6,8 +6,8 @@ import numpy as np
 from trajectory_math import *
 from scipy import optimize
 
-row = 250
-col = 250
+row = 100
+col = 100
 
 t_min,t_max = .5,1.5
 v_min,v_max = 6,15
@@ -27,7 +27,7 @@ for i in range(row):
         # res = get_divergence(v,t)
         # res = get_error((v,t,0))
         # res = get_ball_shadow_width(v,t,-2)
-        res = get_max_area_custom(v,t,-2,1,.2,15)
+        res = get_max_area_custom(v,t,-2,1,.2,20)
 
         if res > 100:
             res = 0
@@ -73,6 +73,8 @@ plt.plot(X1,Y1, color='blue')
 
 plt.xlim((0,row))
 plt.ylim((0,col))
+
+# np.save('2.5k_5:1', arr[:,:,0])
 
 
 plt.show() 
