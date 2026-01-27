@@ -21,8 +21,6 @@ img = plt.imshow(arr, norm='linear', cmap='magma', origin='lower')
 plt.xlabel('initial angle radians')
 plt.ylabel('initial velocity m/s')
 
-ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: ('%g') % (x * ((t_max-t_min)/row)+t_min)))
-ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * ((v_max-v_min)/row)+v_min)))
 
 Y1 = np.argmax(arr, axis=0)
 X1 = np.arange(1250,row)
@@ -39,11 +37,20 @@ Y2 = np.arange(row-1782,row)
 
 X = np.concatenate((X1,X2))
 Y = np.concatenate((Y1,Y2))
-# print(f'\n{X1}\n{X2}\n{Y1}\n{Y2}')
-# print(f'\n{X1}\n{X2}')
+
+np.save('lines/X_5:1_Unscaled.npy',X)
+np.save('lines/Y_5:1_Unscaled.npy',Y)
+
+T = ((t_max-t_min)/col)*X + t_min
+V = ((v_max-v_min)/col)*Y + v_min
+
+
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: ('%g') % (x * ((t_max-t_min)/row)+t_min)))
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * ((v_max-v_min)/row)+v_min)))
 
 # plt.plot(X1,Y1,color='cyan')
-plt.plot(X,Y,color='black')
+plt.scatter(X,Y,c=get_dist(V,T,-2),s=.5)
+
 
 plt.xlim((0,row))
 plt.ylim((0,col))

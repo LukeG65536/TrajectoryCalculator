@@ -148,3 +148,4 @@ def get_optimal_from_dist_old(dist):
     res = optimize.minimize(get_error,init_guess,bounds=bounds)
     # print(res)
     return res.x
+
