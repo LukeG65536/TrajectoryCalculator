@@ -6,7 +6,7 @@ import numpy as np
 from trajectory_math import *
 from scipy import optimize
 
-arr = np.load('2.5k_5:1.npy')
+arr = np.load('maps/2.5k_5:1.npy')
 
 
 fig, ax = plt.subplots()
@@ -15,11 +15,6 @@ col = 2500
 row = 2500
 t_min,t_max = .5,1.5
 v_min,v_max = 6,15
-
- 
-img = plt.imshow(arr, norm='linear', cmap='magma', origin='lower')
-plt.xlabel('initial angle radians')
-plt.ylabel('initial velocity m/s')
 
 
 Y1 = np.argmax(arr, axis=0)
@@ -38,22 +33,46 @@ Y2 = np.arange(row-1782,row)
 X = np.concatenate((X1,X2))
 Y = np.concatenate((Y1,Y2))
 
-np.save('lines/X_5:1_Unscaled.npy',X)
-np.save('lines/Y_5:1_Unscaled.npy',Y)
+
+
+# np.save('lines/X_5:1_Unscaled.npy',X)
+# np.save('lines/Y_5:1_Unscaled.npy',Y)
 
 T = ((t_max-t_min)/col)*X + t_min
 V = ((v_max-v_min)/col)*Y + v_min
 
+dist = get_dist(V,T,-2)
 
-ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: ('%g') % (x * ((t_max-t_min)/row)+t_min)))
-ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * ((v_max-v_min)/row)+v_min)))
-
-# plt.plot(X1,Y1,color='cyan')
-plt.scatter(X,Y,c=get_dist(V,T,-2),s=.5)
+# dist_to_vel_constants = np.polyfit(dist,V,7)
 
 
-plt.xlim((0,row))
-plt.ylim((0,col))
+# vel_ests = dist_to_vel_constants[7] + dist_to_vel_constants[6]*dist + dist_to_vel_constants[5]*dist**2 + dist_to_vel_constants[4]*dist**3 + dist_to_vel_constants[3]*dist**4 + dist_to_vel_constants[2]*dist**5 + dist_to_vel_constants[1]*dist**6 + dist_to_vel_constants[0]*dist**7
+
+
+
+# plt.scatter(dist,V,s=.5)
+# plt.scatter(dist,vel_ests,s=.5)
+
+
+# print(dist_to_vel_constants)
+
+T2 = T[::100]
+V2 = V[::100]
+
+with open('best_angles.txt','w') as file:
+    file.write(f'double[][] optimalPoses = {{\n')
+    for i in range(len(T2)):
+        dist = get_dist(V2[i],T2[i],-2)
+        file.write(f'{{{dist},{T2[i]},{V2[i]}}},\n')
+    file.write(f'}};')
+
+plt.plot(T,V)
+plt.plot(T2,V2)
+
+# coef = np.polyfit(dist,)
+
+# plt.xlim((0,row))
+# plt.ylim((0,col))
 
 # np.save('2.5k_5:1', arr[:,:,0])
 
