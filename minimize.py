@@ -6,11 +6,11 @@ import numpy as np
 from trajectory_math import *
 from scipy import optimize
 
-row = 500
-col = 500
+row = 2500
+col = 2500
 
 t_min,t_max = .5,1.5
-v_min,v_max = 6,15
+v_min,v_max = 5,15
 
 line_res = 200
 
@@ -27,13 +27,13 @@ for i in range(row):
         # res = get_divergence(v,t)
         # res = get_error((v,t,0))
         # res = get_ball_shadow_width(v,t,-2)
-        res = get_max_area_custom(v,t,-2,.001,1,20)
+        res = get_max_area_custom(v,t,(-2+.577),6,1,20)
 
         if res > 100:
             res = 0
      
         arr[j][i][0] = res
-        arr[j][i][1] = get_dist(v,t,-2)
+        arr[j][i][1] = get_dist(v,t,(-2+.577))
 
 dists = np.linspace(0.1,22,line_res)
 
@@ -74,7 +74,7 @@ ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * (
 plt.xlim((0,row))
 plt.ylim((0,col))
 
-np.save('.5k_1:1000', arr[:,:,0])
+np.save('2.5k_6:1', arr[:,:,0])
 
 
 plt.show() 

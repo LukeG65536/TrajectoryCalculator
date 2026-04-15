@@ -6,7 +6,7 @@ import numpy as np
 from trajectory_math import *
 from scipy import optimize
 
-arr = np.load('maps/2.5k_5:1.npy')
+arr = np.load('maps/2.5k_6:1.npy')
 
 
 fig, ax = plt.subplots()
@@ -14,7 +14,7 @@ fig, ax = plt.subplots()
 col = 2500
 row = 2500
 t_min,t_max = .5,1.5
-v_min,v_max = 6,15
+v_min,v_max = 5,15
 
 
 Y1 = np.argmax(arr, axis=0)
@@ -41,7 +41,7 @@ Y = np.concatenate((Y1,Y2))
 T = ((t_max-t_min)/col)*X + t_min
 V = ((v_max-v_min)/col)*Y + v_min
 
-dist = get_dist(V,T,-2)
+# dist = get_dist(V,T,-2)
 
 # dist_to_vel_constants = np.polyfit(dist,V,7)
 
@@ -62,7 +62,7 @@ V2 = V[::100]
 with open('best_angles.txt','w') as file:
     file.write(f'double[][] optimalPoses = {{\n')
     for i in range(len(T2)):
-        dist = get_dist(V2[i],T2[i],-2)
+        dist = get_dist(V2[i],T2[i],(-2+.577))
         file.write(f'{{{dist},{T2[i]},{V2[i]}}},\n')
     file.write(f'}};')
 

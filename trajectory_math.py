@@ -56,7 +56,7 @@ def get_dtdx(v,t,y0):
 
 
 def get_divergence(v,t):
-    return (get_dtdx(v,t,-2)**2+get_dvdx(v,t,-2)**2)**.5
+    return (get_dtdx(v,t,(-2+.577))**2+get_dvdx(v,t,(-2+.577))**2)**.5
 
 # def get_divergence_window(v,t):
 #     width = get_ball_shadow_width(v,t,-2)
@@ -64,7 +64,7 @@ def get_divergence(v,t):
 
 def get_error(input):
     v,t,dist = input
-    res = (-1)*(get_max_area_custom(v,t,-2,1,.2,15)**2) + np.abs(dist - get_dist(v,t,-2))
+    res = (-1)*(get_max_area_custom(v,t,(-2+.577),1,.2,15)**2) + np.abs(dist - get_dist(v,t,(-2+.577)))
     if math.isnan(res): return 10000
     return res
 
