@@ -21,4 +21,4 @@ def get_vel(t, dist, y0 = (-2+.577)):
     
     minimize_scalar(f, bounds=((1,10)))
 
-print(get_vel(0.7, 3))
+print(get_vel(0.7, 2))
