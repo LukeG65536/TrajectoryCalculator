@@ -18,9 +18,9 @@ v_min,v_max = 5,15
 
 
 Y1 = np.argmax(arr, axis=0)
-X1 = np.arange(1250,row)
+X1 = np.arange(0,row)
 
-Y1 = Y1[1250:]
+# Y1 = Y1[1250:]
 X1 = X1[::-1]
 Y1 = Y1[::-1]
 
@@ -59,15 +59,15 @@ V = ((v_max-v_min)/col)*Y + v_min
 T2 = T[::100]
 V2 = V[::100]
 
-with open('best_angles.txt','w') as file:
-    file.write(f'double[][] optimalPoses = {{\n')
-    for i in range(len(T2)):
-        dist = get_dist(V2[i],T2[i],(-2+.577))
-        file.write(f'{{{dist},{T2[i]},{V2[i]}}},\n')
-    file.write(f'}};')
+# with open('best_angles.txt','w') as file:
+#     file.write(f'double[][] optimalPoses = {{\n')
+#     for i in range(len(T2)):
+#         dist = get_dist(V2[i],T2[i],(-2+.577))
+#         file.write(f'{{{dist},{T2[i]},{V2[i]}}},\n')
+#     file.write(f'}};')
 
-plt.plot(T,V)
-plt.plot(T2,V2)
+plt.plot(X1,Y1)
+# plt.plot(T2,V2)
 
 # coef = np.polyfit(dist,)
 

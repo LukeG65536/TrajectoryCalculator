@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from scipy import optimize
+from scipy.optimize import minimize_scalar
 
 
 def get_du(a,b,c,da,db,dc):
@@ -82,7 +83,28 @@ def get_dist(v,t,y0):
     c = y0
     u=get_u(a,b,c)
 
+    if u < 0:
+        return math.inf
+
+    # print(f"a:{a} b:{b} c:{c} v:{v}")
+
     return (-b-u**.5)*(.5)*(1/a)
+
+
+def get_vel(t, dist, y0):
+    def f(x):
+        f = 100
+        try:
+            f = get_dist(x, t, y0) - dist
+        except Exception:
+            pass
+
+        # print(f)
+        
+        return abs(f)
+    
+    return minimize_scalar(f, bounds=((0,20))).get("x")
+
 
 def get_area(v,t,y0,dv,dt,target_dist,max_dx):
     dists = []

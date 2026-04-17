@@ -17,7 +17,7 @@ line_res = 200
 x_cords = np.linspace(t_min,t_max, row)
 y_cords = np.linspace(v_min,v_max, col)
 
-arr = np.zeros((row,col,2))
+arr = np.zeros((row,col))
 
 for i in range(row):
     print(i*100/row)
@@ -42,22 +42,11 @@ Y1 = np.zeros((line_res))
 X2 = np.zeros((line_res))
 Y2 = np.zeros((line_res))
 
-# for i in range(line_res):
-#     res = get_optimal_from_dist_old(dists[i])
-#     X1[i] = (res[1]-t_min)*(row/(t_max-t_min))
-#     Y1[i] = (res[0]-v_min)*(col/(v_max-v_min))
-
-# for i in range(line_res):
-#     res = get_optimal_from_dist(dists[i])
-#     X2[i] = (res[1]-t_min)*(row/(t_max-t_min))
-#     Y2[i] = (res[0]-v_min)*(col/(v_max-v_min))
-
 
 fig, ax = plt.subplots()
 
 
 
-        
 img = plt.imshow(arr[:,:,0], norm='linear', cmap='magma', origin='lower')
 plt.xlabel('initial angle radians')
 plt.ylabel('initial velocity m/s')
