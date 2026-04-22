@@ -1,9 +1,10 @@
 import matplotlib
+
+from trajectory_math import get_dist, get_optimal_from_dist
 matplotlib.use('QtAgg')
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
-from trajectory_math import get_divergence,get_dist,get_optimal_from_dist
 from scipy import optimize
 from mpl_toolkits import mplot3d
 from matplotlib.tri import Triangulation

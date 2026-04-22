@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt, ticker
 import numpy as np
 
+# from app import MplCanvas
 from trajectory_math import get_max_area_custom
 
 class AreaMap:
@@ -32,7 +33,25 @@ class AreaMap:
                     res = 0
             
                 self.map[j][i] = res
-    
+
+    def render_to_axes(self, ax):
+
+        ax.imshow(self.map, norm='linear', cmap='magma', origin='lower')
+        ax.set_xlabel('initial angle radians')
+        ax.set_ylabel('initial velocity m/s')
+
+
+        ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: ('%g') % (x * ((self.t_max - self.t_min)/self.size) + self.t_min)))
+        ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: ('%g') % (y * ((self.v_max - self.v_min)/self.size) + self.v_min)))
+
+        if self.T_line is not None and self.V_line is not None:
+            T_unscalled = np.interp(self.T_line, xp=(self.t_min, self.t_max), fp=(0,self.size-1)) 
+            V_unscalled = np.interp(self.V_line, xp=(self.v_min, self.v_max), fp=(0,self.size-1)) 
+            ax.plot(T_unscalled, V_unscalled)
+
+        ax.set_xlim((0, self.size))
+        ax.set_ylim((0, self.size))
+
 
     def show_map(self):
         fig, ax = plt.subplots()
@@ -54,6 +73,8 @@ class AreaMap:
         plt.ylim((0, self.size))
 
         plt.show()
+
+    
 
     def save_map(self, filepath:str):
         np.save(filepath, self.map)
