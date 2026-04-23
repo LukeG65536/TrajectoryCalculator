@@ -1,3 +1,4 @@
+## TrajectoryCalculator
 ### Prerequisites
 *   [uv](https://github.com/astral-sh/uv)
 ### Installation
@@ -6,12 +7,12 @@
    git clone https://github.com/LukeG65536/TrajectoryCalculator
    cd TrajectoryCalculator
    ```
-2. **Install dependencies and create a virtual environment**
+2. **Install dependencies and create/select a virtual environment**
    ```bash
    uv sync
-   ```
-3. **Select the virtual environment and run**
-   ```bash
    source .venv/bin/activate
+   ```
+3. **Run TrajectoryCalculator**
+   ```bash
    python app.py
    ```
