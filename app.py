@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import platform
 import sys
 
 os.environ["QT_API"] = "PyQt6"
@@ -591,8 +592,8 @@ class MainWindow(QMainWindow):
     def _goto(self, idx: int):
         self.stack.setCurrentIndex(idx)
 
-
-os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
+if platform.system() == "Linux":
+    os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
 app = QApplication(sys.argv)
 w = MainWindow()
 w.show()
