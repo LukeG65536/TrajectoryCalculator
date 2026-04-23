@@ -21,18 +21,18 @@ python app.py
 ```
 
 ### Windows
-Using PowerShell or Command Prompt:
-```powershell
-# Clone the reop
+Using Command Prompt:
+```cmd
+:: Clone the reop
 git clone https://github.com/LukeG65536/TrajectoryCalculator
 cd TrajectoryCalculator
 
-# Install dependencies
+:: Install dependencies
 uv sync
 
-# Select virtual environment
-source .venv/bin/activate.bat
+:: Select virtual environment
+.venv\Scripts\activate
 
-# Run the application
+:: Run the application
 python app.py
 ```
