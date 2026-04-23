@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 import sys
+
 os.environ["QT_API"] = "PyQt6"
 
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
@@ -19,7 +20,6 @@ from area_map import AreaMap
 from trajectory_table import TrajectoryTable
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────────────
 def divider() -> QFrame:
     f = QFrame()
     f.setProperty("role", "divider")
@@ -105,7 +105,6 @@ class SetupPage(QWidget):
         
         root.addWidget(phys)
 
-        # ── Ranges ────────────────────────────────────────────────────────
         rng = QGroupBox("Search Ranges")
         rf = QFormLayout(rng)
         rf.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -315,7 +314,6 @@ class TablePage(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # ── Rail ──────────────────────────────────────────────────────────
         rail = QWidget()
         rail.setFixedWidth(270)
 
@@ -364,7 +362,6 @@ class TablePage(QWidget):
 
         root.addWidget(rail)
 
-        # ── Table view ────────────────────────────────────────────────────
         tv = QWidget()
         tl = QVBoxLayout(tv)
         tl.setContentsMargins(24, 24, 24, 24)
@@ -508,9 +505,6 @@ class CalibratePage(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Calibration Error", str(e))
 
-# ══════════════════════════════════════════════════════════════════════════════
-# Main Window
-# ══════════════════════════════════════════════════════════════════════════════
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -520,7 +514,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central)
         layout = QHBoxLayout(central)
 
-        # ── Sidebar ───────────────────────────────────────────────────────
+
         sidebar = QWidget()
         sidebar.setFixedWidth(200)
         sv = QVBoxLayout(sidebar)
@@ -589,6 +583,7 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(idx)
 
 
+os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
 app = QApplication(sys.argv)
 w = MainWindow()
 w.show()

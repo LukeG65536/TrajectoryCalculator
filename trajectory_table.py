@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from typing import List
 
 import numpy as np
@@ -39,9 +40,23 @@ class TrajectoryTable:
         T = []
         V = []
 
+        def check_row(row: List[str]):
+            num = r"-?\d+\.\d+"
+            space = r"\s*"
+            pattern = f"^{space}{num}{space}$"
+            for item in row:
+                if not bool(re.match(pattern, item)):
+                    return False
+            return True
+
         with open(filepath, mode='r', newline='', encoding='utf-8') as file:
             reader = csv.reader(file)
             for row in reader:
+                print(row)
+
+                if not check_row(row):
+                    continue
+
                 D.append(float(row[0]))
                 T.append(float(row[1]))
                 V.append(float(row[2]))
