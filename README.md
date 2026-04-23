@@ -1,18 +1,38 @@
-## TrajectoryCalculator
+## Installation
 ### Prerequisites
-*   [uv](https://github.com/astral-sh/uv)
-### Installation
-1. **Clone the reop**
-   ```bash
-   git clone https://github.com/LukeG65536/TrajectoryCalculator
-   cd TrajectoryCalculator
-   ```
-2. **Install dependencies and create/select a virtual environment**
-   ```bash
-   uv sync
-   source .venv/bin/activate
-   ```
-3. **Run TrajectoryCalculator**
-   ```bash
-   python app.py
-   ```
+* [uv](https://github.com/astral-sh/uv)
+* Git
+
+### Linux
+Open your terminal and run:
+```bash
+# Clone the reop
+git clone https://github.com/LukeG65536/TrajectoryCalculator
+cd TrajectoryCalculator
+
+# Install dependencies
+uv sync
+
+# Select virtual environment
+source .venv/bin/activate
+
+# Run the application
+python app.py
+```
+
+### Windows
+Using PowerShell or Command Prompt:
+```powershell
+# Clone the reop
+git clone https://github.com/LukeG65536/TrajectoryCalculator
+cd TrajectoryCalculator
+
+# Install dependencies
+uv sync
+
+# Select virtual environment
+source .venv/bin/activate.bat
+
+# Run the application
+python app.py
+```
