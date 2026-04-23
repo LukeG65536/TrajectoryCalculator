@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 from area_map import AreaMap
 from trajectory_table import TrajectoryTable
 
-
+# Basic helper functions
 def divider() -> QFrame:
     f = QFrame()
     f.setProperty("role", "divider")
@@ -43,17 +43,17 @@ def dim(text: str) -> QLabel:
     l.setWordWrap(True)
     return l
 
-# ── Matplotlib canvas ─────────────────────────────────────────────────────────
+# Matplotlib custom canvas object for rendering the maps
 class MplCanvas(FigureCanvas):
     def __init__(self):
         self.fig = Figure(figsize=(6, 5), dpi=100)
         self.axes = self.fig.add_subplot(111)
         super().__init__(self.fig)
-        # self.setStyleSheet(f"background:{PANEL}; border:none;")
 
     def refresh_style(self):
         self.draw()
 
+# MapWorker Object that just takes an area_map and initializes that. 
 class MapWorker(QThread):
     progress = pyqtSignal(int)
     finished = pyqtSignal()
@@ -71,13 +71,15 @@ class MapWorker(QThread):
                 for j in range(m.size):
                     t   = m.t_at_index[i]
                     v   = m.v_at_intex[j]
-                    res = get_max_area_custom(v, t, m.y0, 5, 1, m.area_itr)
+                    res = get_max_area_custom(v, t, m.y0, 5, 1, m.area_itr, m.range)
                     m.map[j][i] = 0 if res > 100 else res
                 self.progress.emit(int((i + 1) * 100 / m.size))
             self.finished.emit()
         except Exception as e:
             self.error.emit(str(e))
 
+
+# Page 1 setup stuff __________________________________________________________________
 class SetupPage(QWidget):
     proceed = pyqtSignal(dict)
 
@@ -92,7 +94,7 @@ class SetupPage(QWidget):
         root.addWidget(head("Robot Setup"))
         root.addWidget(divider())
 
-        phys = QGroupBox("PHYSICAL PARAMETERS")
+        phys = QGroupBox("Physical Setup")
         f = QFormLayout(phys)
         f.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
 
@@ -101,7 +103,16 @@ class SetupPage(QWidget):
         self.y0.setValue(-1.423)
         self.y0.setDecimals(2)
         self.y0.setSingleStep(0.1)
+
+
+        self.range = QDoubleSpinBox()
+        self.range.setRange(0, 5)
+        self.range.setValue(0.595)
+        self.range.setDecimals(2)
+        self.range.setSingleStep(0.1)
+
         f.addRow("Shooter Height (m):", self.y0)
+        f.addRow("Target Range (m):", self.range)
         
         root.addWidget(phys)
 
@@ -130,7 +141,6 @@ class SetupPage(QWidget):
 
         ms = QGroupBox("Map Settings")
         mf = QFormLayout(ms)
-        mf.setSpacing(12)
         mf.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.map_size = QSpinBox(); self.map_size.setRange(5, 5000); self.map_size.setValue(200)
@@ -139,9 +149,6 @@ class SetupPage(QWidget):
         self.area_itr = QSpinBox(); self.area_itr.setRange(1, 100); self.area_itr.setValue(18)
         mf.addRow("Area iterations:", self.area_itr)
 
-        self.t_cutoff = QDoubleSpinBox(); self.t_cutoff.setRange(0, 3.14)
-        self.t_cutoff.setValue(0.9); self.t_cutoff.setSuffix(" rad")
-        mf.addRow("Best-fit angle cutoff:", self.t_cutoff)
         root.addWidget(ms)
 
         root.addStretch()
@@ -157,16 +164,17 @@ class SetupPage(QWidget):
         scroll.setWidget(inner)
         outer.addWidget(scroll)
 
+# the setup page should exit wit a dict that allows the next section to make a propper areamap
     def _emit(self):
         self.proceed.emit(dict(
             y0=self.y0.value(),
+            range=self.range.value(),
             t_min=self.t_min.value(), t_max=self.t_max.value(),
             v_min=self.v_min.value(), v_max=self.v_max.value(),
             size=self.map_size.value(),
-            area_itr=self.area_itr.value(),
-            t_cutoff=self.t_cutoff.value(),
+            area_itr=self.area_itr.value()
         ))
-
+# Second page map renderer_______________________________________________________________
 class MapPage(QWidget):
     proceed = pyqtSignal()
 
@@ -243,7 +251,7 @@ class MapPage(QWidget):
         cv.addWidget(self.nav_toolbar)
         root.addWidget(canvas_wrap, 1)
 
-    def set_area_map(self, am: AreaMap, cutoff: float):
+    def set_area_map(self, am: AreaMap, cutoff: float = 0.9):
         self.area_map = am
         self.cutoff.setValue(cutoff)
         self.map_status.setText("Map configured. Generate or load a saved map.")
@@ -301,7 +309,7 @@ class MapPage(QWidget):
         self.map_status.setText("Best fit line found.")
         self._render()
 
-
+# Third page table making/loading ________________________________________________________________-
 class TablePage(QWidget):
     proceed = pyqtSignal()
 
@@ -431,7 +439,7 @@ class TablePage(QWidget):
                                            "Java (*.txt);;All Files (*)")
         if p:
             self.traj_table.export_java_arr(p)
-
+# Page 4 table calibration _______________________________________________________
 class CalibratePage(QWidget):
     def __init__(self, get_table):
         super().__init__()
@@ -504,7 +512,7 @@ class CalibratePage(QWidget):
             traj.calibrate_vels(self._ref)
         except Exception as e:
             QMessageBox.critical(self, "Calibration Error", str(e))
-
+# Main window class ____________________________________________________________________
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -570,12 +578,13 @@ class MainWindow(QMainWindow):
     def _on_setup(self, p: dict):
         am = AreaMap(
             y0=p["y0"],
+            range=p["range"],
             size=p["size"],
             t_range=(p["t_min"], p["t_max"]),
             v_range=(p["v_min"], p["v_max"]),
             area_itr=p["area_itr"],
         )
-        self.map_page.set_area_map(am, p["t_cutoff"])
+        self.map_page.set_area_map(am)
         self.table_page.set_area_map(am)
         self._goto(1)
 

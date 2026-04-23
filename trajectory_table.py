@@ -19,7 +19,7 @@ class TrajectoryTable:
         self.vels = vels
         self.y0 = y0
 
-    
+    # main method to create tables by using the best fit line
     @classmethod
     def from_areamap(cls, area_map: AreaMap, stepsize: int = 1, y0 = -1.423):
         if area_map.T_line is None or area_map.V_line is None:
@@ -33,7 +33,7 @@ class TrajectoryTable:
         
         return cls(D, T, V, y0)
     
-
+# loading from csv with regex to make sure the csv is valid
     @classmethod
     def from_file(cls, filepath:str, y0 = -1.423):
         D = []
@@ -41,7 +41,8 @@ class TrajectoryTable:
         V = []
 
         def check_row(row: List[str]):
-            num = r"-?\d+\.\d+"
+            #num matckes to any positive or negative decimal or integer
+            num = r"-?\d+\.?\d+"
             space = r"\s*"
             pattern = f"^{space}{num}{space}$"
             for item in row:
@@ -53,7 +54,7 @@ class TrajectoryTable:
             reader = csv.reader(file)
             for row in reader:
                 print(row)
-
+                # check each row against the regex to make sure its valid and won't throw any errors
                 if not check_row(row):
                     continue
 
@@ -62,7 +63,7 @@ class TrajectoryTable:
                 V.append(float(row[2]))
         return cls(D, T, V, y0)
 
-
+# basic funciton to save to a .csv
     def save_table(self, filepath:str):
         data = list(zip(self.dists, self.thetas, self.vels))
 
@@ -72,6 +73,7 @@ class TrajectoryTable:
             writer = csv.writer(file)
             writer.writerows(data)
 
+    #turns the m/s values in the current table into another tables arbitrary units values (like motor rps) using a linear regression
     def calibrate_vels(self, other: TrajectoryTable):
         commanded_vels = []
         actual_vels = []
@@ -80,12 +82,15 @@ class TrajectoryTable:
             commanded_vels.append(val)
 
             actual_vels.append(get_vel(other.thetas[i], other.dists[i], other.y0))
-
+        # use np to do linear inerpolation that goes from actual->commanded
         slope, intercept = np.polyfit(np.asarray(actual_vels), np.asarray(commanded_vels), 1)
 
+        #apply the actual->commanded transformation
         for i,val in enumerate(self.vels):
             self.vels[i] = val * slope + intercept
     
+
+    # writes the current table in the java array formatting to make it easier to implement in java
     def export_java_arr(self, filepath:str):
         with open(filepath, 'w') as file:
             file.write(f" = {{\n")

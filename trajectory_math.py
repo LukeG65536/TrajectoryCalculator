@@ -59,22 +59,12 @@ def get_dtdx(v,t,y0):
 def get_divergence(v,t):
     return (get_dtdx(v,t,(-2+.577))**2+get_dvdx(v,t,(-2+.577))**2)**.5
 
-# def get_divergence_window(v,t):
-#     width = get_ball_shadow_width(v,t,-2)
-#     return ((get_dtdx(v,t,-2)*width)**2+(get_dvdx(v,t,-2)*width)**2)**.5
-
 def get_error(input):
     v,t,dist = input
     res = (-1)*(get_max_area_custom(v,t,(-2+.577),1,.2,15)**2) + np.abs(dist - get_dist(v,t,(-2+.577)))
     if math.isnan(res): return 10000
     return res
 
-
-# def get_window_error(input):
-#     v,t,target_dist = input
-#     res = get_divergence_window(v,t)
-#     if math.isnan(res): return 10000
-#     return res
 
 def get_dist(v,t,y0):
     g=-10.0
@@ -98,8 +88,6 @@ def get_vel(t, dist, y0):
             f = get_dist(x, t, y0) - dist
         except Exception:
             pass
-
-        # print(f)
         
         return abs(f)
     
@@ -108,7 +96,6 @@ def get_vel(t, dist, y0):
 
 def get_area(v,t,y0,dv,dt,target_dist,max_dx):
     dists = []
-    # print(dv)
     dists.append(get_dist(v+dv,t+dt,y0))
     dists.append(get_dist(v+dv,t-dt,y0))
     dists.append(get_dist(v-dv,t+dt,y0))
@@ -122,16 +109,16 @@ def get_area(v,t,y0,dv,dt,target_dist,max_dx):
         
     return dv*dt
 
-def get_max_area_custom(v,t,y0,dv_multi,dt_multi,iter):
+def get_max_area_custom(v,t,y0,dv_multi,dt_multi,iter,target_range=0.595):
     current_best = 0
     current_step = 1
     target_dist = get_dist(v,t,y0)
 
-    for i in range(iter):
+    for _ in range(iter):
         test = current_best + current_step
         dv = test * dv_multi
         dt = test * dt_multi
-        if goes_in_worst_case(v, t, y0, dv, dt, target_dist):
+        if goes_in_worst_case(v, t, y0, dv, dt, target_dist, target_range):
             current_best = test
             continue
         current_step = current_step/2
@@ -139,8 +126,8 @@ def get_max_area_custom(v,t,y0,dv_multi,dt_multi,iter):
     return current_best
         
 
-def goes_in_worst_case(v,t,y0,dv,dt, dist):
-    return goes_in(v+dv, t+dt, y0, dist, 0.595) and goes_in(v-dv, t+dt, y0, dist, 0.595) and goes_in(v+dv, t-dt, y0, dist, 0.595) and goes_in(v-dv, t-dt, y0, dist, 0.595)
+def goes_in_worst_case(v,t,y0,dv,dt, dist, target_range):
+    return goes_in(v+dv, t+dt, y0, dist, target_range) and goes_in(v-dv, t+dt, y0, dist, target_range) and goes_in(v+dv, t-dt, y0, dist, target_range) and goes_in(v-dv, t-dt, y0, dist, target_range)
 
 def goes_in(v,t,y0,target_dist,max_dx):
     error = np.abs(target_dist-get_dist(v,t,y0))
@@ -150,7 +137,7 @@ def goes_in(v,t,y0,target_dist,max_dx):
 def get_max_area(v,t,y0,dv_multi,dt_multi):
     target = get_dist(v,t,y0)
     init_guess = 0
-    options = {'maxiter':500}
+    options = {'maxiter':100}
     to_min = lambda x: -get_area(v,t,y0,x[0]*dv_multi, x[0]*dt_multi, target, 0.595)
     res = optimize.minimize(to_min,init_guess,method='Nelder-Mead',options=options)
     return res.x
